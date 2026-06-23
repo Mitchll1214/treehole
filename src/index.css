@@ -43,6 +43,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── 动态彩色边框动画 ── */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes borderSpin {
+  to { --border-angle: 360deg; }
+}
+
 /* 进入动画 */
 @keyframes fadeInUp {
   from {
@@ -206,31 +217,55 @@ button:disabled {
 }
 
 .post {
-  background: #fff;
+  --post-bg: #fff;
+  background: var(--post-bg);
   border-radius: var(--radius-md);
   padding: 22px 24px;
   margin-bottom: 0;
   box-shadow: var(--shadow-sm);
-  border: 1px solid #F1F5F9;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   position: relative;
+  z-index: 0;
 }
 
+/* 彩色流动边框光环 */
 .post::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 16px;
-  bottom: 16px;
-  width: 3px;
-  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-  border-radius: 0 4px 4px 0;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  inset: -3px;
+  z-index: -1;
+  border-radius: calc(var(--radius-md) + 3px);
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    #ff6b6b,
+    #feca57,
+    #48dbfb,
+    #ff9ff3,
+    #54a0ff,
+    #a29bfe,
+    #ff6b6b
+  );
+  animation: borderSpin 4s linear infinite;
+  opacity: 0.55;
+  filter: blur(3px);
+  transition: opacity 0.4s ease, filter 0.4s ease;
 }
 
+/* hover 时边框更亮更清晰 */
 .post:hover::before {
-  opacity: 1;
+  opacity: 0.85;
+  filter: blur(2px);
+}
+
+/* 内层遮罩 — 盖住伪元素内部，露出"边框" */
+.post::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: calc(var(--radius-md) - 1px);
+  background: var(--post-bg);
 }
 
 .post.expiring {
@@ -240,8 +275,12 @@ button:disabled {
   padding-top: 0;
   padding-bottom: 0;
   margin-bottom: 0;
-  border: none;
+  border-color: transparent;
   overflow: hidden;
+}
+.post.expiring::before,
+.post.expiring::after {
+  opacity: 0;
 }
 
 .posts-list {
@@ -253,7 +292,6 @@ button:disabled {
 .post:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
-  border-color: #E2E8F0;
 }
 
 .post-content {
@@ -519,12 +557,15 @@ footer {
   }
   
   .post {
-    background: rgba(30, 41, 59, 0.6);
-    border-color: rgba(255, 255, 255, 0.06);
+    --post-bg: rgba(30, 41, 59, 0.85);
+  }
+  
+  .post::after {
+    background: var(--post-bg);
   }
   
   .post:hover {
-    border-color: rgba(255, 255, 255, 0.1);
+    /* 深色模式下 hover 边框更亮 */
   }
   
   .post-content {
