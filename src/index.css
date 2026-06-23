@@ -92,33 +92,136 @@ body {
 }
 
 h1 {
-  color: var(--primary-dark);
+  color: #4A6FA5;
   text-align: center;
-  margin: 0 0 8px 0;
+  margin: 0 0 24px 0;
   font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  position: relative;
+  padding-bottom: 16px;
+  display: inline-block;
+  width: 100%;
+}
+
+/* 标题彩虹下划线 */
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    #ff6b6b,
+    #feca57,
+    #48dbfb,
+    #ff9ff3,
+    #a29bfe
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 
 .notice {
   background: var(--warning-bg);
-  border-left: 4px solid var(--warning-border);
-  padding: 14px 18px;
+  padding: 16px 20px;
   margin-bottom: 28px;
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   color: #92400E;
-  line-height: 1.5;
+  line-height: 1.6;
   box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 提示区渐变色左边条 */
+.notice::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    #feca57,
+    #ff9f43,
+    #ee5a24,
+    #feca57
+  );
+  background-size: 100% 200%;
+  animation: shimmerVertical 3s ease-in-out infinite;
+  border-radius: 4px 0 0 4px;
+}
+
+@keyframes shimmerVertical {
+  0%, 100% { background-position: 50% 0%; }
+  50%      { background-position: 50% 100%; }
 }
 
 .notice strong {
   color: #D97706;
+  font-weight: 700;
 }
 
 .input-area {
+  --input-bg: #FAFBFC;
   margin-bottom: 32px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--input-bg);
+  position: relative;
+  z-index: 0;
+  border: 2px solid transparent;
+}
+
+/* 输入区彩虹流动边框 */
+.input-area::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  border-radius: calc(var(--radius-md) + 3px);
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    #ff6b6b,
+    #feca57,
+    #48dbfb,
+    #ff9ff3,
+    #54a0ff,
+    #a29bfe,
+    #ff6b6b
+  );
+  animation: borderSpin 4s linear infinite;
+  opacity: 0.4;
+  filter: blur(4px);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+/* 聚焦时边框更亮 */
+.input-area:focus-within::before {
+  opacity: 0.7;
+  filter: blur(2px);
+}
+
+/* 内层遮罩 */
+.input-area::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: calc(var(--radius-md) - 1px);
+  background: var(--input-bg);
 }
 
 textarea {
@@ -129,12 +232,14 @@ textarea {
   line-height: 1.7;
   color: #334155;
   border: 2px solid #E2E8F0;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   resize: vertical;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
-  background-color: #FAFBFC;
+  background-color: #fff;
   font-family: inherit;
+  position: relative;
+  z-index: 0;
 }
 
 textarea::placeholder {
@@ -145,7 +250,7 @@ textarea::placeholder {
 textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px var(--primary-glow);
+  box-shadow: 0 0 0 3px var(--primary-glow), 0 0 20px rgba(126,184,218,0.15);
   background-color: #fff;
 }
 
@@ -163,7 +268,7 @@ textarea:focus {
 }
 
 button {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(135deg, var(--primary) 0%, #6CB4D9 50%, var(--primary-dark) 100%);
   color: white;
   border: none;
   border-radius: var(--radius-md);
@@ -172,30 +277,51 @@ button {
   font-weight: 600;
   cursor: pointer;
   width: 100%;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 48px;
   letter-spacing: 0.3px;
   position: relative;
   overflow: hidden;
+  z-index: 0;
 }
 
-/* 按钮波纹效果 */
+/* 按钮光泽扫过 */
 button::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.3) 40%,
+    rgba(255,255,255,0.5) 50%,
+    rgba(255,255,255,0.3) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  pointer-events: none;
 }
 
 button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-button);
+  box-shadow:
+    0 4px 16px rgba(126,184,218,0.35),
+    0 0 30px rgba(255,107,107,0.15),
+    0 0 50px rgba(72,219,251,0.12),
+    0 0 70px rgba(255,159,243,0.1);
 }
 
 button:hover:not(:disabled)::after {
   opacity: 1;
+  animation: shimmer-sweep 2s ease-in-out infinite;
+}
+
+@keyframes shimmer-sweep {
+  0%, 100% { background-position: 200% 0; }
+  50%      { background-position: -200% 0; }
 }
 
 button:active:not(:disabled) {
@@ -209,6 +335,9 @@ button:disabled {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+button:disabled::after {
+  display: none;
 }
 
 .posts-container {
@@ -393,6 +522,11 @@ button:disabled {
   width: auto !important;
   min-height: auto !important;
   transition: all 0.25s ease !important;
+  overflow: visible !important;
+}
+
+.load-more-button::after {
+  display: none;
 }
 
 .load-more-button:hover {
@@ -471,9 +605,17 @@ footer {
     font-size: 1.6rem;
   }
   
+  h1::after {
+    width: 140px;
+  }
+  
   .notice {
     font-size: 0.82rem;
     padding: 12px 14px;
+  }
+  
+  .input-area {
+    padding: 14px;
   }
   
   .post-time {
@@ -533,12 +675,37 @@ footer {
     text-shadow: none;
   }
   
+  h1::after {
+    opacity: 0.8;
+  }
+  
   .notice {
     color: #FCD34D;
+    background: rgba(61, 48, 32, 0.6);
   }
   
   .notice strong {
     color: #FBBF24;
+  }
+  
+  .notice::before {
+    opacity: 0.8;
+  }
+  
+  .input-area {
+    --input-bg: rgba(15, 23, 42, 0.6);
+  }
+  
+  .input-area::after {
+    background: var(--input-bg);
+  }
+  
+  .input-area::before {
+    opacity: 0.5;
+  }
+  
+  .input-area:focus-within::before {
+    opacity: 0.8;
   }
   
   textarea {
@@ -554,6 +721,7 @@ footer {
   textarea:focus {
     background-color: rgba(15, 23, 42, 0.9);
     border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(124,169,216,0.2), 0 0 20px rgba(124,169,216,0.1);
   }
   
   .post {
